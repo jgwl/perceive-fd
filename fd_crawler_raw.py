@@ -1,39 +1,40 @@
 import calendar
 import os
+import pendulum
 import random
 import re
 import requests
 import time
+
 
 def dl_range(year_start, month_start, year_end, month_end):
     """
     Download multiple months, using start & end year/months.
     See dl_month for contents.
     
-    Parameters
-    ----------
-    year_start : int
-    month_start : int (Jan = 1)
-    year_end : int
-    month_end : int (Jan = 1)
+    Args:
+        year_start: int
+        month_start: int (Jan = 1)
+        year_end: int
+        month_end: int (Jan = 1)
     """
-    
-    ym_start = (year_start * 12) + month_start - 1
-    ym_end = (year_end * 12) + month_end - 1
-    for ym in range(ym_start, ym_end + 1):
-        y, m = divmod(ym, 12)
-        dl_month(y,m+1)
 
+    start = pendulum.date(year_start, month_start, 1)
+    end = pendulum.date(year_end, month_end, 1)
+    period = pendulum.period(start, end)
+    for dt in period.range('months'):
+        y, m = dt.year, dt.month
+        dl_month(y, m)
+    
     
 def dl_month(year, month):
     """
     Download entire raw html contents of month.
     Contents will be written to subdir, e.g. ./2017_01
     
-    Parameters
-    ----------
-    year : int
-    month : int (Jan = 1)
+    Args: 
+        year: int
+        month: int (Jan = 1)
     """
     
     year_str = str(year)
@@ -56,15 +57,13 @@ def dl_index(year, month, path):
     """
     Download month's index file.
     
-    Parameters
-    ----------
-    year : str, e.g. "2017"
-    month : str, e.g., "Jan"
-    path : str
+    Args:
+        year: str, e.g. "2017"
+        month: str, e.g., "Jan"
+        path: str
     
-    Returns
-    -------
-    str
+    Returns:
+        str: filename that contents were written into
     
     """
     
@@ -86,13 +85,11 @@ def parse_index_num(filename):
     Determine how many messages the index file contains. 
     Parses the first line (e.g., <!-- SecLists-Message-Count: 108 -->)
     
-    Parameters
-    ----------
-    filename : str
+    Args: 
+        filename: str
     
-    Returns
-    -------
-    int
+    Returns:
+        int
     
     """
     with open(filename, 'r') as f:
@@ -107,12 +104,11 @@ def dl_message(year, month, id, path):
     """
     Download individual message.
     
-    Parameters
-    ----------
-    year : str, e.g. "2017"
-    month : str, e.g., "Jan"
-    id: str, e.g., "0"
-    path : str
+    Args: 
+        year: str, e.g. "2017"
+        month: str, e.g., "Jan"
+        id: str, e.g., "0"
+        path: str
     
     """
     
