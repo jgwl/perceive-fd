@@ -26,7 +26,6 @@ def dl_range(year_start, month_start, year_end, month_end):
         y, m = dt.year, dt.month
         dl_month(y, m)
     
-    
 def dl_month(year, month):
     """
     Download entire raw html contents of month.
